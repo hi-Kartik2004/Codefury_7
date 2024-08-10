@@ -43,6 +43,9 @@ function FindPeople() {
   const [selectedPerson, setSelectedPerson] = useState<any | null>(null);
   const [isConfirming, setIsConfirming] = useState<boolean>(false);
 
+  // New filter state
+  const [filter, setFilter] = useState<"all" | "lost" | "found">("all");
+
   async function getUser() {
     const { data: user, error } = await supabase.auth.getUser();
     if (error) {
@@ -57,9 +60,10 @@ function FindPeople() {
 
   async function fetchLostPeople(
     userEmail: string | undefined,
-    searchTerm: string = ""
+    searchTerm: string = "",
+    filter: "all" | "lost" | "found" = "all"
   ) {
-    let query = supabase.from("lost_people").select("*").eq("found", false);
+    let query = supabase.from("lost_people").select("*");
 
     if (userEmail) {
       query = query.eq("user_email", userEmail);
@@ -67,6 +71,12 @@ function FindPeople() {
 
     if (searchTerm) {
       query = query.ilike("name", `%${searchTerm}%`);
+    }
+
+    if (filter === "lost") {
+      query = query.eq("found", false);
+    } else if (filter === "found") {
+      query = query.eq("found", true);
     }
 
     const { data, error } = await query;
@@ -87,17 +97,20 @@ function FindPeople() {
     setIsFormValid(!!name && !!age && !!photoUrl && location !== null);
   }, [name, age, photoUrl, location]);
 
-  // Add a useEffect to fetch all lost people if no user is logged in or on initial load
   useEffect(() => {
     if (!user?.user?.user_metadata?.email) {
-      fetchLostPeople(undefined, searchTerm);
+      fetchLostPeople(undefined, searchTerm, filter);
     }
-  }, [user, searchTerm]);
+  }, [user, searchTerm, filter]);
 
-  // Update fetchLostPeople to handle search term
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
-    fetchLostPeople(user?.user?.user_metadata?.email, e.target.value);
+    fetchLostPeople(user?.user?.user_metadata?.email, e.target.value, filter);
+  };
+
+  const handleFilterChange = (newFilter: "all" | "lost" | "found") => {
+    setFilter(newFilter);
+    fetchLostPeople(user?.user?.user_metadata?.email, searchTerm, newFilter);
   };
 
   const handleLocationClick = () => {
@@ -172,7 +185,6 @@ function FindPeople() {
       }
 
       toast.success("Details added successfully!");
-      // Reset form
       setName("");
       setAge(null);
       setFile(null);
@@ -180,7 +192,7 @@ function FindPeople() {
       setLocation(null);
       setPhotoUrl(null);
 
-      fetchLostPeople(user?.user?.user_metadata?.email); // Refresh the lost people list
+      fetchLostPeople(user?.user?.user_metadata?.email, searchTerm, filter); // Refresh the lost people list
     } catch (error: any) {
       console.error("Error:", error.message);
       toast.error("Failed to add details. Please try again.");
@@ -201,7 +213,7 @@ function FindPeople() {
         if (error) throw error;
 
         toast.success("Marked as found successfully!");
-        fetchLostPeople(user?.user?.user_metadata?.email); // Refresh the lost people list
+        fetchLostPeople(user?.user?.user_metadata?.email, searchTerm, filter); // Refresh the lost people list
       } catch (error) {
         console.error("Error updating person:", error);
         toast.error("Failed to mark as found.");
@@ -336,7 +348,10 @@ function FindPeople() {
             </DialogTrigger>
             <DialogContent className="max-h-screen overflow-auto">
               <DialogHeader>
-                <DialogTitle>Lost People Linked with your account</DialogTitle>
+                <DialogTitle>
+                  {<span className="capitalize">{filter}</span>} People Linked
+                  with your account
+                </DialogTitle>
                 <DialogDescription className="text-muted-foreground">
                   People who are lost and linked with your account, mark found
                   if they are no longer lost.
@@ -379,16 +394,40 @@ function FindPeople() {
           </Dialog>
         </div>
       </div>
+
       <Separator className="my-4" />
-      {/* Search input */}
-      <div className="mb-4">
+
+      {/* Search and filter UI */}
+      <div className="flex items-center mb-4">
         <Input
           type="text"
           value={searchTerm}
           onChange={handleSearchChange}
           placeholder="Search lost people..."
+          className="mr-4"
         />
+        <div className="flex gap-2">
+          <Button
+            variant={filter === "all" ? "default" : "outline"}
+            onClick={() => handleFilterChange("all")}
+          >
+            All
+          </Button>
+          <Button
+            variant={filter === "lost" ? "default" : "outline"}
+            onClick={() => handleFilterChange("lost")}
+          >
+            Lost
+          </Button>
+          <Button
+            variant={filter === "found" ? "default" : "outline"}
+            onClick={() => handleFilterChange("found")}
+          >
+            Found
+          </Button>
+        </div>
       </div>
+
       {/* Render all lost people */}
       <div className="flex flex-wrap justify-around items-center mb-10">
         {lostPeople.map((person) => (
