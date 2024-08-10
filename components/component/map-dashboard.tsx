@@ -16,12 +16,34 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsTrigger } from "../ui/tabs";
 import { TabsList } from "@radix-ui/react-tabs";
+import { Map } from "../Map";
+import {
+  getAllPoints,
+  getFoundPeoplePoints,
+  getLostPeoplePoints,
+  getNewsReportedPoints,
+  getUserReportedPoints,
+} from "@/utils/server/getAllPoints";
 
-export function MapDashboard() {
+export async function MapDashboard() {
+  // const data1 = await getNewsReportedPoints();
+  const data1 = {},
+    data2 = {};
+  // const data2 = await getUserReportedPoints();
+  // const data3 = await getLostPeoplePoints();
+  // console.log(data2);
+
+  const data4 = await getFoundPeoplePoints();
+  console.log(data4);
   return (
     <div className="flex min-h-screen w-full">
       <div className="flex-1 bg-muted">
-        <div className="h-full w-full" />
+        <Map
+          newsReportedPoints={data1}
+          userReportedPoints={data2}
+          lostPeopleReportedPoints
+          foundPeopleReportedPoints={data4}
+        />
       </div>
       <Tabs
         defaultValue="current"
@@ -58,10 +80,10 @@ export function MapDashboard() {
             <h1>Current</h1>
             <div className="grid gap-4">
               <div className="grid gap-2">
-                <Label htmlFor="location">Location</Label>
-                <Input id="location" placeholder="Enter a location" />
+                <Label htmlFor="location">Search</Label>
+                <Input id="query" placeholder="Enter a search query" />
               </div>
-              <div className="grid gap-2">
+              {/* <div className="grid gap-2">
                 <Label htmlFor="date-range">Date Range</Label>
                 <Popover>
                   <PopoverTrigger asChild>
@@ -78,7 +100,7 @@ export function MapDashboard() {
                     <Calendar initialFocus mode="range" numberOfMonths={1} />
                   </PopoverContent>
                 </Popover>
-              </div>
+              </div> */}
               <div className="grid gap-2">
                 <Label htmlFor="category">Category</Label>
                 <Select>
@@ -86,10 +108,13 @@ export function MapDashboard() {
                     <SelectValue placeholder="Select a category" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="restaurants">Restaurants</SelectItem>
-                    <SelectItem value="attractions">Attractions</SelectItem>
-                    <SelectItem value="hotels">Hotels</SelectItem>
-                    <SelectItem value="shopping">Shopping</SelectItem>
+                    <SelectItem value="all">All Points</SelectItem>
+                    <SelectItem value="news-points">News Points</SelectItem>
+                    <SelectItem value="user-points">
+                      User reported points
+                    </SelectItem>
+                    <SelectItem value="lost-people">Lost People</SelectItem>
+                    <SelectItem value="found-people">Found People</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
