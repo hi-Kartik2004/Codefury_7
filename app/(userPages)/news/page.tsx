@@ -2,15 +2,6 @@
 import React, { useState } from "react";
 import { NewsListingV0 } from "@/components/component/news-listing-v0";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -21,13 +12,41 @@ import {
 } from "@/components/ui/select";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
+import { formatISO, subDays } from "date-fns";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { CaretSortIcon, ChevronDownIcon } from "@radix-ui/react-icons";
+
+const languageMapping = {
+  English: "eng",
+  German: "deu",
+  Hindi: "hin",
+  Kannada: "kan",
+  Tamil: "tam",
+  Gujarati: "guj",
+  Punjabi: "pan",
+  Bengali: "ben",
+  Urdu: "urd",
+};
 
 const News = () => {
   const [keyword, setKeyword] = useState("");
   const [location, setLocation] = useState("India");
-  const [language, setLanguage] = useState("eng");
+  const [language, setLanguage] = useState("English");
   const [sortBy, setSortBy] = useState("socialScore");
-  const [timeWindow, setTimeWindow] = useState("31");
+  const [startDate, setStartDate] = useState(
+    formatISO(subDays(new Date(), 7), { representation: "date" })
+  ); // Default to 7 days before today
+  const [endDate, setEndDate] = useState(
+    formatISO(new Date(), { representation: "date" })
+  ); // Default to today
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -66,11 +85,14 @@ const News = () => {
               location
             )}`,
           },
-          { lang: language },
+          { lang: languageMapping[language] },
+          {
+            dateStart: formatISO(new Date(startDate), {
+              representation: "date",
+            }),
+            dateEnd: formatISO(new Date(endDate), { representation: "date" }),
+          },
         ],
-      },
-      $filter: {
-        forceMaxDataTimeWindow: timeWindow,
       },
     };
 
@@ -95,6 +117,9 @@ const News = () => {
       includeConceptDescription: "true",
       includeConceptSynonyms: "true",
       includeConceptTrendingScore: "true",
+      includeLocationGeoLocation: "true",
+      includeLocationPopulation: "true",
+      includeLocationGeoNamesId: "true",
       apiKey: apiKey,
       articlesPage: page,
       articlesCount: pageSize,
@@ -113,6 +138,8 @@ const News = () => {
       }
       const result = await response.json();
       setData(result);
+
+      console.log(result);
       setTotalResults(result.articles.totalResults);
       setCurrentPage(page);
     } catch (error) {
@@ -163,29 +190,34 @@ const News = () => {
                 <SelectValue placeholder="Language" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="eng">English</SelectItem>
-                <SelectItem value="fra">French</SelectItem>
-                <SelectItem value="deu">German</SelectItem>
-                <SelectItem value="spa">Spanish</SelectItem>
+                {Object.keys(languageMapping).map((lang) => (
+                  <SelectItem key={lang} value={lang}>
+                    {lang}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
-            <Select value={timeWindow} onValueChange={setTimeWindow}>
-              <SelectTrigger className="w-full md:w-[180px]">
-                <SelectValue placeholder="Time Window" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="1">1 day</SelectItem>
-                <SelectItem value="7">7 days</SelectItem>
-                <SelectItem value="31">31 days</SelectItem>
-                <SelectItem value="365">1 year</SelectItem>
-              </SelectContent>
-            </Select>
+
+            <Input
+              type="date"
+              placeholder="Start Date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              className="w-full md:w-auto"
+            />
+            <Input
+              type="date"
+              placeholder="End Date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              className="w-full md:w-auto mt-2 md:mt-0"
+            />
           </div>
           <div className="flex items-center gap-4">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" className="flex items-center gap-2">
-                  <ListOrderedIcon className="w-5 h-5" />
+                  <CaretSortIcon className="w-5 h-5" />
                   <span>Sort by</span>
                   <ChevronDownIcon className="w-4 h-4" />
                 </Button>
@@ -209,239 +241,45 @@ const News = () => {
                 </DropdownMenuRadioGroup>
               </DropdownMenuContent>
             </DropdownMenu>
+
             <Button onClick={() => handleSearch(1)}>Search</Button>
           </div>
         </div>
       </div>
+
+      <div className="py-4">
+        <div className="flex flex-wrap items-center gap-4"></div>
+      </div>
+
       {data ? (
         <>
           <NewsListingV0 articles={data.articles.results} />
-          <div className="my-8 flex justify-center">
-            <div className="flex items-center justify-center gap-2 flex-wrap w-full">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => handleSearch(currentPage - 1)}
-                disabled={currentPage === 1}
-              >
-                <ChevronLeftIcon className="w-4 h-4" />
-                <span className="sr-only">Previous</span>
-              </Button>
-              {[...Array(totalPages)].map((_, index) => (
-                <Button
-                  key={index}
-                  variant="outline"
-                  size="sm"
-                  className="px-3"
-                  onClick={() => handleSearch(index + 1)}
-                >
-                  {index + 1}
-                </Button>
-              ))}
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => handleSearch(currentPage + 1)}
-                disabled={currentPage === totalPages}
-              >
-                <ChevronRightIcon className="w-4 h-4" />
-                <span className="sr-only">Next</span>
-              </Button>
+          <div className="flex justify-between mt-4">
+            <Button
+              disabled={currentPage <= 1}
+              onClick={() => handleSearch(currentPage - 1)}
+            >
+              Previous
+            </Button>
+            <div className="text-sm text-muted-foreground">
+              Page {currentPage} of {totalPages}
             </div>
+            <Button
+              disabled={currentPage >= totalPages}
+              onClick={() => handleSearch(currentPage + 1)}
+            >
+              Next
+            </Button>
           </div>
         </>
       ) : (
-        <p className="text-center underline underline-offset-8 mt-10">
-          Use the filters above to search for news articles.
-        </p>
+        <div className="text-center text-muted-foreground mt-4">
+          No data to display.
+        </div>
       )}
-      <Separator className="mb-10" />
+      <Separator className="my-6" />
     </div>
   );
 };
 
 export default News;
-
-// Icon components remain the same
-function ChevronDownIcon(props) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="m6 9 6 6 6-6" />
-    </svg>
-  );
-}
-
-function ChevronLeftIcon(props) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="m15 18-6-6 6-6" />
-    </svg>
-  );
-}
-
-function ChevronRightIcon(props) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="m9 18 6-6-6-6" />
-    </svg>
-  );
-}
-
-function FilterIcon(props) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
-    </svg>
-  );
-}
-
-function ListOrderedIcon(props) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <line x1="10" x2="21" y1="6" y2="6" />
-      <line x1="10" x2="21" y1="12" y2="12" />
-      <line x1="10" x2="21" y1="18" y2="18" />
-      <path d="M4 6h1v4" />
-      <path d="M4 10h2" />
-      <path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1" />
-    </svg>
-  );
-}
-
-function MapPinIcon(props) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
-      <circle cx="12" cy="10" r="3" />
-    </svg>
-  );
-}
-
-function MenuIcon(props) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <line x1="4" x2="20" y1="12" y2="12" />
-      <line x1="4" x2="20" y1="6" y2="6" />
-      <line x1="4" x2="20" y1="18" y2="18" />
-    </svg>
-  );
-}
-
-function NewspaperIcon(props) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2" />
-      <path d="M18 14h-8" />
-      <path d="M15 18h-5" />
-      <path d="M10 6h8v4h-8V6Z" />
-    </svg>
-  );
-}
-
-function SearchIcon(props) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="11" cy="11" r="8" />
-      <path d="m21 21-4.3-4.3" />
-    </svg>
-  );
-}
