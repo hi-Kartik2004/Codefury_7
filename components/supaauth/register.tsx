@@ -19,7 +19,7 @@ export default function Register() {
       <div className="p-5 space-y-5">
         <div className="text-center space-y-3">
           <Image
-            src={"/vercel.svg"}
+            src={"/logo.png"}
             alt="logo"
             width={100}
             height={100}
