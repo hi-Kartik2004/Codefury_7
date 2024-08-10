@@ -1,54 +1,97 @@
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-} from "@/components/ui/popover";
+"use client";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   Select,
-  SelectTrigger,
-  SelectValue,
   SelectContent,
   SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
-import { Tabs, TabsContent, TabsTrigger } from "../ui/tabs";
 import { TabsList } from "@radix-ui/react-tabs";
+import { useEffect, useState } from "react";
+import { Tabs, TabsContent, TabsTrigger } from "../ui/tabs";
 import { Map } from "../Map";
-import {
-  getAllPoints,
-  getFoundPeoplePoints,
-  getLostPeoplePoints,
-  getNewsReportedPoints,
-  getUserReportedPoints,
-} from "@/utils/server/getAllPoints";
 
-export async function MapDashboard() {
-  // const data1 = await getNewsReportedPoints();
-  const data1 = {},
-    data2 = {};
-  // const data2 = await getUserReportedPoints();
-  // const data3 = await getLostPeoplePoints();
-  // console.log(data2);
+export default function MapDashboard({ searchParams }: any) {
+  const [newsReportedPoints, setNewsReportedPoints] = useState<any>([]);
+  const [userReportedPoints, setUserReportedPoints] = useState<any>([]);
+  const [lostPeopleReportedPoints, setLostPeopleReportedPoints] = useState<any>(
+    []
+  );
+  const [foundPeopleReportedPoints, setFoundPeopleReportedPoints] =
+    useState<any>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
 
-  const data4 = await getFoundPeoplePoints();
-  console.log(data4);
+  useEffect(() => {
+    async function fetchData() {
+      let data1 = [],
+        data2 = [],
+        data3 = [],
+        data4 = [];
+
+      // Determine the category and fetch the corresponding data
+      if (selectedCategory === "news-points") {
+        data1 = await fetch("api/map-points?category=news-points").then((res) =>
+          res.json()
+        );
+
+        console.log("data1", data1);
+      } else if (selectedCategory === "user-points") {
+        data2 = await fetch("api/map-points?category=user-points").then((res) =>
+          res.json()
+        );
+      } else if (selectedCategory === "lost-people") {
+        data3 = await fetch("api/map-points?category=lost-people").then((res) =>
+          res.json()
+        );
+      } else if (selectedCategory === "found-people") {
+        data4 = await fetch("api/map-points?category=found-people").then(
+          (res) => res.json()
+        );
+      } else {
+        data1 = await fetch("api/map-points?category=news-points").then((res) =>
+          res.json()
+        );
+        data2 = await fetch("api/map-points?category=user-points").then((res) =>
+          res.json()
+        );
+        data3 = await fetch("api/map-points?category=lost-people").then((res) =>
+          res.json()
+        );
+        data4 = await fetch("api/map-points?category=found-people").then(
+          (res) => res.json()
+        );
+      }
+
+      // Update state with fetched data
+      setNewsReportedPoints(data1);
+      setUserReportedPoints(data2);
+      setLostPeopleReportedPoints(data3);
+      setFoundPeopleReportedPoints(data4);
+    }
+
+    fetchData();
+  }, [selectedCategory]); // Re-run effect when selectedCategory changes
+
   return (
     <div className="flex min-h-screen w-full">
       <div className="flex-1 bg-muted">
         <Map
-          newsReportedPoints={data1}
-          userReportedPoints={data2}
-          lostPeopleReportedPoints
-          foundPeopleReportedPoints={data4}
+          newsReportedPoints={newsReportedPoints}
+          userReportedPoints={userReportedPoints}
+          lostPeopleReportedPoints={lostPeopleReportedPoints}
+          foundPeopleReportedPoints={foundPeopleReportedPoints}
         />
       </div>
-      <Tabs
-        defaultValue="current"
-        className="max-w-[400px] w-full p-2 rounded-sm"
-      >
+      <Tabs defaultValue="current" className="max-w-[300px] w-full rounded-sm">
         <TabsList className="grid w-full grid-cols-2 border rounded-sm">
           <TabsTrigger
             value="current"
@@ -83,27 +126,9 @@ export async function MapDashboard() {
                 <Label htmlFor="location">Search</Label>
                 <Input id="query" placeholder="Enter a search query" />
               </div>
-              {/* <div className="grid gap-2">
-                <Label htmlFor="date-range">Date Range</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      id="date-range"
-                      variant="outline"
-                      className="w-full justify-start text-left font-normal"
-                    >
-                      <CalendarDaysIcon className="mr-1 h-4 w-4 -translate-x-1" />
-                      Pick a date range
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar initialFocus mode="range" numberOfMonths={1} />
-                  </PopoverContent>
-                </Popover>
-              </div> */}
               <div className="grid gap-2">
                 <Label htmlFor="category">Category</Label>
-                <Select>
+                <Select onValueChange={(value) => setSelectedCategory(value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select a category" />
                   </SelectTrigger>
@@ -111,14 +136,13 @@ export async function MapDashboard() {
                     <SelectItem value="all">All Points</SelectItem>
                     <SelectItem value="news-points">News Points</SelectItem>
                     <SelectItem value="user-points">
-                      User reported points
+                      User Reported Points
                     </SelectItem>
                     <SelectItem value="lost-people">Lost People</SelectItem>
                     <SelectItem value="found-people">Found People</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
-              <Button className="w-full">Apply Filters</Button>
             </div>
           </div>
         </TabsContent>

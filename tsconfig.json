@@ -28,7 +28,9 @@
     ".next/types/**/*.ts",
     "components/component/navbar-v0.tsx",
     "components/component/news-listing-v0.tsx",
-    "app/(userPages)/news/page.tsx"
+    "app/(userPages)/news/page.tsx",
+    "components/Map.tsx",
+    "components/Map.ts"
   ],
   "exclude": ["node_modules"]
 }

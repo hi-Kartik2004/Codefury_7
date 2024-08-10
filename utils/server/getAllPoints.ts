@@ -6,7 +6,6 @@ export async function getUserReportedPoints() {
   const { data, error } = await supabase
     .from("userIncidentLocations")
     .select("*");
-  console.log(data);
   if (error) {
     console.error(error);
     return [];
@@ -20,7 +19,6 @@ export async function getNewsReportedPoints() {
   const { data, error } = await supabase
     .from("newsIncidentLocations")
     .select("*");
-  console.log(data);
   if (error) {
     console.error(error);
     return [];
@@ -35,7 +33,6 @@ export async function getLostPeoplePoints() {
     .from("lost_people")
     .select("*")
     .eq("found", false);
-  console.log(data);
   if (error) {
     console.error(error);
     return [];
@@ -50,7 +47,6 @@ export async function getFoundPeoplePoints() {
     .from("lost_people")
     .select("*")
     .eq("found", true);
-  console.log(data);
   if (error) {
     console.error(error);
     return [];
