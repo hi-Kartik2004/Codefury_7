@@ -1,10 +1,8 @@
+import { ThemeProvider } from "@/components/theme-provider";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import "./globals.css";
-import { ThemeProvider } from "@/components/theme-provider";
-import { ModeToggle } from "@/components/ModeToggle";
 import { Toaster } from "sonner";
-import { NavbarV0 } from "@/components/component/navbar-v0";
+import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
