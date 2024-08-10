@@ -50,34 +50,34 @@ export async function NavbarV0() {
           <Image src="/logo.png" alt="Codefury 7" width={40} height={40} />
           <span className="">Aid-Grid</span>
         </Link>
-        <nav className="md:flex items-center gap-4">
+        <nav className="md:flex items-center gap-8">
           <Link
             href="/news"
-            className="text-sm font-medium transition-colors hover:text-primary"
+            className="text-sm font-medium transition-all hover:text-primary underline underline-offset-4 hover:underline-offset-8 duration-200"
             prefetch={false}
           >
             News
           </Link>
           <Link
             href="add-info"
-            className="text-sm font-medium transition-colors hover:text-primary"
+            className="text-sm font-medium transition-all hover:text-primary underline underline-offset-4 hover:underline-offset-8 duration-200"
             prefetch={false}
           >
-            Add-info
+            Report Emergency
           </Link>
           <Link
             href="get-emergency-contacts"
-            className="text-sm font-medium transition-colors hover:text-primary"
+            className="text-sm font-medium transition-all hover:text-primary underline underline-offset-4 hover:underline-offset-8 duration-200"
             prefetch={false}
           >
-            Get Emergency Contact
+            Get Emergency Contacts
           </Link>
           <Link
-            href="#"
-            className="text-sm font-medium transition-colors hover:text-primary"
+            href="find-people"
+            className="text-sm font-medium hover:text-primary underline underline-offset-4 hover:underline-offset-8 duration-200 transition-all"
             prefetch={false}
           >
-            Contact
+            Find People
           </Link>
         </nav>
         <div className="flex items-center gap-2">
