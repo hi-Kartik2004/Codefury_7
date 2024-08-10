@@ -47,7 +47,7 @@ export async function NavbarV0() {
     <header className="fixed top-0 z-50 w-full bg-background border-b">
       <div className="container flex items-center justify-between h-16 px-4 md:px-6">
         <Link href="/" className="flex items-center gap-2" prefetch={false}>
-          <Image src="/logo.png" alt="Codefury 7" width={50} height={50} />
+          <Image src="/logo.png" alt="Codefury 7" width={40} height={40} />
           <span className="">Aid-Grid</span>
         </Link>
         <nav className="md:flex items-center gap-4">
@@ -66,11 +66,11 @@ export async function NavbarV0() {
             Add-info
           </Link>
           <Link
-            href="#"
+            href="get-emergency-contacts"
             className="text-sm font-medium transition-colors hover:text-primary"
             prefetch={false}
           >
-            Services
+            Get Emergency Contact
           </Link>
           <Link
             href="#"
@@ -107,37 +107,27 @@ export async function NavbarV0() {
                   <span className="sr-only">Toggle user menu</span>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
+              <DropdownMenuContent>
                 <DropdownMenuItem>
                   <Link
-                    href="#"
+                    href="add-emergency-contacts"
                     className="flex items-center gap-2"
                     prefetch={false}
                   >
-                    <div className="h-4 w-4" />
-                    <span>Profile</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Link
-                    href="#"
-                    className="flex items-center gap-2"
-                    prefetch={false}
-                  >
-                    <div className="h-4 w-4" />
-                    <span>Settings</span>
+                    <span>Emergency Contacts</span>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <Link
-                    href="/signout?next=/"
-                    className="flex items-center gap-2"
-                    prefetch={false}
-                  >
-                    <div className="h-4 w-4" />
-                    <span>Sign out</span>
-                  </Link>
+                <DropdownMenuItem className="p-0">
+                  <Button variant={"destructive"} className="w-full" asChild>
+                    <Link
+                      href="/signout?next=/"
+                      className="flex items-center gap-2 w-full"
+                      prefetch={false}
+                    >
+                      Sign out
+                    </Link>
+                  </Button>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
