@@ -59,11 +59,11 @@ export async function NavbarV0() {
             News
           </Link>
           <Link
-            href="#"
+            href="add-info"
             className="text-sm font-medium transition-colors hover:text-primary"
             prefetch={false}
           >
-            About
+            Add-info
           </Link>
           <Link
             href="#"

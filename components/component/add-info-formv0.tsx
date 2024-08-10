@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { createSupabaseBrowser } from "@/lib/supabase/client";
 import { toast } from "sonner";
 import { CameraIcon, LocateIcon, Loader2 } from "lucide-react";
+import SeeMyInfo from "../SeeMyInfo";
 
 export default function AddInfoFormV0({
   addUserIncident,
@@ -144,105 +145,116 @@ export default function AddInfoFormV0({
   };
 
   return (
-    <Card className="mx-auto max-w-md p-6 sm:p-8">
-      <CardHeader>
-        <CardTitle className="text-2xl font-bold">
-          Update Your Neighbouring
-        </CardTitle>
-        <CardDescription>
-          Provide your latest information to keep others up-to-date.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="grid gap-6">
-        <form onSubmit={handleSubmit} className="grid gap-4">
-          <div className="grid gap-2">
-            <Label htmlFor="name">Name</Label>
-            <Input
-              id="name"
-              placeholder="Enter your name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              disabled={isSubmitting}
-            />
-          </div>
+    <div className="flex flex-wrap justify-around gap-4">
+      <div className="max-w-[500px] w-full">
+        <Card className="mx-auto max-w-md p-6 sm:p-8 bg-[#000000]">
+          <CardHeader>
+            <CardTitle className="text-2xl font-bold">
+              Update Your Neighbouring
+            </CardTitle>
+            <CardDescription>
+              Provide your latest information to keep others up-to-date.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-6">
+            <form onSubmit={handleSubmit} className="grid gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="name">Name</Label>
+                <Input
+                  id="name"
+                  placeholder="Enter your name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  disabled={isSubmitting}
+                />
+              </div>
 
-          <div className="grid gap-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="Enter your email"
-              value={email}
-              disabled={true}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
+              <div className="grid gap-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="Enter your email"
+                  value={email}
+                  disabled={true}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
 
-          <div className="grid gap-2">
-            <Label htmlFor="photo">Photo</Label>
-            <div className="flex items-center gap-2">
-              <input
-                type="file"
-                id="photo"
-                onChange={handlePhotoChange}
-                className="hidden"
-                disabled={isSubmitting || uploadingPhoto}
-              />
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => document.getElementById("photo")?.click()}
-                disabled={isSubmitting || uploadingPhoto}
-              >
-                {uploadingPhoto ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <CameraIcon className="h-4 w-4 mr-2" />
+              <div className="grid gap-2">
+                <Label htmlFor="photo">Photo</Label>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="file"
+                    id="photo"
+                    onChange={handlePhotoChange}
+                    className="hidden"
+                    disabled={isSubmitting || uploadingPhoto}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => document.getElementById("photo")?.click()}
+                    disabled={isSubmitting || uploadingPhoto}
+                  >
+                    {uploadingPhoto ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <CameraIcon className="h-4 w-4 mr-2" />
+                    )}
+                    {uploadingPhoto ? "Uploading..." : "Upload Photo"}
+                  </Button>
+                  {photoUrl && (
+                    <p className="text-sm text-green-600">Photo uploaded</p>
+                  )}
+                </div>
+              </div>
+
+              <div className="grid gap-2">
+                <Label htmlFor="location">Location</Label>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full"
+                  onClick={handleLocationClick}
+                  disabled={isSubmitting || loadingLocation}
+                >
+                  {loadingLocation ? (
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  ) : (
+                    <LocateIcon className="h-4 w-4 mr-2" />
+                  )}
+                  {loadingLocation ? "Fetching location..." : "Get my location"}
+                </Button>
+                {location && (
+                  <p className="text-sm text-green-600">
+                    Location: {location.lat.toFixed(6)},{" "}
+                    {location.long.toFixed(6)}
+                  </p>
                 )}
-                {uploadingPhoto ? "Uploading..." : "Upload Photo"}
-              </Button>
-              {photoUrl && (
-                <p className="text-sm text-green-600">Photo uploaded</p>
-              )}
-            </div>
-          </div>
-
-          <div className="grid gap-2">
-            <Label htmlFor="location">Location</Label>
+              </div>
+            </form>
+          </CardContent>
+          <CardFooter className="flex justify-end">
             <Button
-              type="button"
-              variant="outline"
-              className="w-full"
-              onClick={handleLocationClick}
-              disabled={isSubmitting || loadingLocation}
+              type="submit"
+              onClick={handleSubmit}
+              disabled={!isFormValid || isSubmitting}
             >
-              {loadingLocation ? (
+              {isSubmitting ? (
                 <Loader2 className="h-4 w-4 animate-spin mr-2" />
-              ) : (
-                <LocateIcon className="h-4 w-4 mr-2" />
-              )}
-              {loadingLocation ? "Fetching location..." : "Get my location"}
+              ) : null}
+              {isSubmitting ? "Updating..." : "Update Information"}
             </Button>
-            {location && (
-              <p className="text-sm text-green-600">
-                Location: {location.lat.toFixed(6)}, {location.long.toFixed(6)}
-              </p>
-            )}
-          </div>
-        </form>
-      </CardContent>
-      <CardFooter className="flex justify-end">
-        <Button
-          type="submit"
-          onClick={handleSubmit}
-          disabled={!isFormValid || isSubmitting}
-        >
-          {isSubmitting ? (
-            <Loader2 className="h-4 w-4 animate-spin mr-2" />
-          ) : null}
-          {isSubmitting ? "Updating..." : "Update Information"}
-        </Button>
-      </CardFooter>
-    </Card>
+          </CardFooter>
+        </Card>
+      </div>
+      <div className="max-w-[820px] w-full">
+        <h1 className="text-center text-3xl font-bold mb-10 underline underline-offset-8">
+          Exisiting reports
+        </h1>
+        <SeeMyInfo />
+      </div>
+    </div>
   );
 }
