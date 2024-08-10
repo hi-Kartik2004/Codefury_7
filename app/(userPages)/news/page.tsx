@@ -24,7 +24,32 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { CaretSortIcon, ChevronDownIcon } from "@radix-ui/react-icons";
 
-const languageMapping = {
+type Language =
+  | "English"
+  | "German"
+  | "Hindi"
+  | "Kannada"
+  | "Tamil"
+  | "Gujarati"
+  | "Punjabi"
+  | "Bengali"
+  | "Urdu";
+type SortByOption = "date" | "relevance" | "socialScore";
+
+interface Article {
+  title: string;
+  url: string;
+  // Add other fields as needed from the API response
+}
+
+interface NewsData {
+  articles: {
+    results: Article[];
+    totalResults: number;
+  };
+}
+
+const languageMapping: Record<Language, string> = {
   English: "eng",
   German: "deu",
   Hindi: "hin",
@@ -36,27 +61,26 @@ const languageMapping = {
   Urdu: "urd",
 };
 
-const News = () => {
-  const [keyword, setKeyword] = useState("");
-  const [location, setLocation] = useState("India");
-  const [language, setLanguage] = useState("English");
-  const [sortBy, setSortBy] = useState("socialScore");
-  const [startDate, setStartDate] = useState(
+const News: React.FC = () => {
+  const [keyword, setKeyword] = useState<string>("");
+  const [location, setLocation] = useState<string>("India");
+  const [language, setLanguage] = useState<Language>("English");
+  const [sortBy, setSortBy] = useState<SortByOption>("socialScore");
+  const [startDate, setStartDate] = useState<string>(
     formatISO(subDays(new Date(), 7), { representation: "date" })
   ); // Default to 7 days before today
-  const [endDate, setEndDate] = useState(
+  const [endDate, setEndDate] = useState<string>(
     formatISO(new Date(), { representation: "date" })
   ); // Default to today
-  const [data, setData] = useState(null);
-  const [error, setError] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
-  const [totalResults, setTotalResults] = useState(0);
+  const [data, setData] = useState<NewsData | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(10);
+  const [totalResults, setTotalResults] = useState<number>(0);
 
-  const handleSearch = async (page = 1) => {
+  const handleSearch = async (page: number = 1) => {
     setError(null);
     const apiKey = process.env.NEXT_PUBLIC_NEWS_API_KEY;
-    console.log("API Key:", apiKey);
 
     if (!apiKey) {
       setError("API key is missing. Please check your environment variables.");
@@ -65,7 +89,7 @@ const News = () => {
 
     const baseUrl = "https://www.newsapi.ai/api/v1/article/getArticles";
 
-    const queryObject = {
+    const queryObject: any = {
       $query: {
         $and: [
           {
@@ -121,12 +145,11 @@ const News = () => {
       includeLocationPopulation: "true",
       includeLocationGeoNamesId: "true",
       apiKey: apiKey,
-      articlesPage: page,
-      articlesCount: pageSize,
+      articlesPage: page.toString(),
+      articlesCount: pageSize.toString(),
     });
 
     const url = `${baseUrl}?${params.toString()}`;
-    console.log("Full URL:", url);
 
     try {
       const response = await fetch(url);
@@ -136,15 +159,12 @@ const News = () => {
           `HTTP error! Status: ${response.status}, Message: ${errorText}`
         );
       }
-      const result = await response.json();
+      const result: NewsData = await response.json();
       setData(result);
-
-      console.log(result);
       setTotalResults(result.articles.totalResults);
       setCurrentPage(page);
     } catch (error) {
-      console.error("Error fetching news data:", error);
-      setError(`Error fetching news data: ${error.message}`);
+      setError(`Error fetching news data: ${(error as Error).message}`);
     }
   };
 
@@ -185,7 +205,10 @@ const News = () => {
               onChange={(e) => setLocation(e.target.value)}
               className="w-full md:w-auto"
             />
-            <Select value={language} onValueChange={setLanguage}>
+            <Select
+              value={language}
+              onValueChange={(value) => setLanguage(value as Language)}
+            >
               <SelectTrigger className="w-full md:w-[180px]">
                 <SelectValue placeholder="Language" />
               </SelectTrigger>
@@ -227,7 +250,7 @@ const News = () => {
                 <DropdownMenuSeparator />
                 <DropdownMenuRadioGroup
                   value={sortBy}
-                  onValueChange={setSortBy}
+                  onValueChange={(value) => setSortBy(value as SortByOption)}
                 >
                   <DropdownMenuRadioItem value="date">
                     Date
