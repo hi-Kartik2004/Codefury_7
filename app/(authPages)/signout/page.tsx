@@ -3,8 +3,9 @@ import { useRouter, useSearchParams } from "next/navigation";
 
 import ClientSignout from "@/utils/client-hooks/clientSignout";
 import { toast } from "sonner";
+import { Suspense } from "react";
 
-function ServerPage() {
+function HandleRedirect() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const next = searchParams.get("next") || "/";
@@ -12,6 +13,15 @@ function ServerPage() {
   signout();
   toast.success("Signout successful");
   router.push(next);
+  return <div>Signing out...</div>;
+}
+
+function ServerPage() {
+  return (
+    <Suspense fallback={"Signing out..."}>
+      <HandleRedirect />
+    </Suspense>
+  );
 }
 
 export default ServerPage;
