@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import ClientSignout from "@/utils/client-hooks/clientSignout";
 import { toast } from "sonner";
 import { Suspense } from "react";
+import { revalidatePath } from "next/cache";
 
 function HandleRedirect() {
   const router = useRouter();

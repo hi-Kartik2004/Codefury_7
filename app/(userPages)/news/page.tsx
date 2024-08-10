@@ -1,18 +1,7 @@
 "use client";
-import React, { useState } from "react";
 import { NewsListingV0 } from "@/components/component/news-listing-v0";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Separator } from "@/components/ui/separator";
-import { formatISO, subDays } from "date-fns";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,8 +11,21 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+import { createSupabaseBrowser } from "@/lib/supabase/client";
 import { CaretSortIcon, ChevronDownIcon } from "@radix-ui/react-icons";
+import { formatISO, subDays } from "date-fns";
+import React, { useState } from "react";
 
+// Define the languages
 type Language =
   | "English"
   | "German"
@@ -34,14 +36,27 @@ type Language =
   | "Punjabi"
   | "Bengali"
   | "Urdu";
+
+// Define the sorting options
 type SortByOption = "date" | "relevance" | "socialScore";
 
+// Define the structure of an article// Define the structure of the location object
+interface Location {
+  long: number;
+  lat: number;
+  population: number;
+}
+
+// Update the Article interface to use the new Location type
 interface Article {
   title: string;
   url: string;
-  // Add other fields as needed from the API response
+  location: Location; // Update this line
+  eventUri: string;
+  dateTime: string; // Assuming dateTime is a string in ISO format
 }
 
+// Define the structure of the news data response
 interface NewsData {
   articles: {
     results: Article[];
@@ -49,6 +64,7 @@ interface NewsData {
   };
 }
 
+// Map the languages to their corresponding codes
 const languageMapping: Record<Language, string> = {
   English: "eng",
   German: "deu",
@@ -68,15 +84,16 @@ const News: React.FC = () => {
   const [sortBy, setSortBy] = useState<SortByOption>("socialScore");
   const [startDate, setStartDate] = useState<string>(
     formatISO(subDays(new Date(), 7), { representation: "date" })
-  ); // Default to 7 days before today
+  );
   const [endDate, setEndDate] = useState<string>(
     formatISO(new Date(), { representation: "date" })
-  ); // Default to today
+  );
   const [data, setData] = useState<NewsData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(10);
   const [totalResults, setTotalResults] = useState<number>(0);
+  const supabase = createSupabaseBrowser();
 
   const handleSearch = async (page: number = 1) => {
     setError(null);
@@ -163,11 +180,42 @@ const News: React.FC = () => {
       setData(result);
       setTotalResults(result.articles.totalResults);
       setCurrentPage(page);
+
+      for (const article of result.articles.results) {
+        const { eventUri, url: readUrl, dateTime, location } = article;
+        const { long, lat, population } = location;
+
+        if (
+          lat != 22 &&
+          long != 79 &&
+          eventUri &&
+          readUrl &&
+          dateTime &&
+          population
+        ) {
+          const { error } = await supabase
+            .from("newsIncidentLocations")
+            .insert([
+              {
+                lat,
+                long,
+                read_url: readUrl,
+                updated_at: dateTime,
+                population,
+              },
+            ]);
+
+          console.log("inserted data");
+
+          if (error) {
+            console.error("Error inserting data into Supabase:", error.message);
+          }
+        }
+      }
     } catch (error) {
       setError(`Error fetching news data: ${(error as Error).message}`);
     }
   };
-
   const totalPages = Math.ceil(totalResults / pageSize);
 
   return (
