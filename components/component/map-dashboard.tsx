@@ -1,13 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -15,32 +9,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { ReloadIcon } from "@radix-ui/react-icons";
 import { TabsList } from "@radix-ui/react-tabs";
 import { useEffect, useState } from "react";
-import { Tabs, TabsContent, TabsTrigger } from "../ui/tabs";
+import { toast } from "sonner";
 import { Map } from "../Map";
 import { Separator } from "../ui/separator";
-import { ReloadIcon } from "@radix-ui/react-icons";
-import { toast } from "sonner";
-import { Dialog } from "../ui/dialog";
-import { DialogContent, DialogTrigger } from "@radix-ui/react-dialog";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "../ui/card";
-import {
-  AlertDialog,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "../ui/alert-dialog";
+import { Tabs, TabsContent, TabsTrigger } from "../ui/tabs";
 import NearByEvents from "./nearby-events";
+import NotifyMe from "../NotifyMe";
 
 export default function MapDashboard({ searchParams }: any) {
   const [newsReportedPoints, setNewsReportedPoints] = useState<any>([]);
@@ -304,6 +281,8 @@ export default function MapDashboard({ searchParams }: any) {
               </div>
               <Separator className="my-4" />
               <NearByEvents currentLocation={currentLocation} />
+              <Separator className="my-4" />
+              <NotifyMe currentLocation={currentLocation} />
             </div>
           </div>
         </TabsContent>

@@ -62,6 +62,7 @@
     "react-leaflet": "^4.2.1",
     "react-leaflet-cluster": "^2.1.0",
     "react-leaflet-markercluster": "^2.0.0",
+    "react-multilingual-content": "^1.2.2",
     "react-resizable-panels": "^2.0.23",
     "recharts": "^2.12.7",
     "resend": "^3.5.0",
