@@ -1,36 +1,7 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+Here's a brief description of your application:
 
-## Getting Started
+Application Overview:
 
-First, run the development server:
+Our application is designed to enhance disaster preparedness and response by providing users with real-time information about ongoing events such as news updates, user reports, and alerts about missing persons. Leveraging geolocation technology, the app identifies the user’s current location and displays the nearest events on an interactive map. Users can filter these events by type (e.g., news, user reports, lost people) and sort them based on relevance, date, or popularity. The search functionality allows users to look up specific events or news related to particular locations. By offering a centralized platform for disaster-related information, our app empowers individuals and communities to stay informed and act quickly during emergencies. This solution not only improves situational awareness but also facilitates faster and more coordinated responses to disasters.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+This description outlines the purpose, features, and benefits of your application in a concise manner. Let me know if you need any changes or additional detail
