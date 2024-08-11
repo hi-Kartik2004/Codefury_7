@@ -29,7 +29,7 @@ function NewsletterComponent({ locations }: any) {
     }
   }, [selectedType, locations]);
 
-  if (locations.length === 0) {
+  if (locations && locations.length === 0) {
     return <div>Everything seems fine around you!</div>;
   }
 
