@@ -13,16 +13,18 @@ async function NewsLetterView() {
     const { data, error }: any = await supabase
       .from("weekly_newsletters")
       .select("resp")
-      .eq("email", user?.user_metadata?.email);
-    dataJson = JSON.parse(data);
+      .eq("email", user?.user_metadata?.email)
+      .single();
+
+    dataJson = data;
+    console.log(dataJson);
   } catch (err) {
     console.error(err);
   }
 
-  // convert json string into json
   return (
-    <div>
-      <NewsletterComponent locations={dataJson} />
+    <div className="pt-24">
+      <NewsletterComponent locations={dataJson?.resp} />
     </div>
   );
 }

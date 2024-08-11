@@ -3,7 +3,7 @@ import { createSupabaseServer } from "@/lib/supabase/server";
 export async function POST(request: Request) {
   const supabase = createSupabaseServer();
   const data = await request.json();
-  const currentLocation = data.currentLocation || { 22: 79 };
+  const currentLocation = data.currentLocation || { lat: 22, lng: 79 };
 
   const R = 6371; // Radius of the Earth in kilometers
 
@@ -57,7 +57,7 @@ export async function POST(request: Request) {
         location.lat,
         location.long
       );
-      return { ...location, distance, type };
+      return { ...location, distance: distance, type };
     });
 
     return locationsWithDistance;
