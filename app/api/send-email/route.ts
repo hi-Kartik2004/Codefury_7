@@ -22,7 +22,7 @@ export async function POST(request: Request) {
   // Compose the email
   const mailOptions = {
     from: "Kartikeya Saini <weekly_newsletter@example.com>", // Sender address
-    to: data.email, // List of recipients
+    to: resp.email, // List of recipients
     subject: "Aid-Grid - Weekly Newsletter", // Subject line
     html: "Link here", // HTML body
   };
