@@ -30,6 +30,8 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import Image from "next/image";
 import { ModeToggle } from "../ModeToggle";
 import { createSupabaseServer } from "@/lib/supabase/server";
+import GoogleTranslator from "react-multilingual-content";
+import Translator from "../Translator";
 
 export async function NavbarV0() {
   const supabase = createSupabaseServer();
@@ -113,6 +115,10 @@ export async function NavbarV0() {
                   >
                     <span>Emergency Contacts</span>
                   </Link>
+                </DropdownMenuItem>
+
+                <DropdownMenuItem>
+                  <Translator />
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem className="p-0">
