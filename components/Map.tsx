@@ -78,6 +78,7 @@ export function Map({
   userReportedPoints = [],
   lostPeopleReportedPoints = [],
   foundPeopleReportedPoints = [],
+  mylocation,
 }: any): JSX.Element {
   return (
     <MapContainer
@@ -91,6 +92,16 @@ export function Map({
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
       <MarkerClusterGroup chunkedLoading>
+        {mylocation && (
+          <Marker position={[mylocation.lat, mylocation.lng]} icon={customIcon}>
+            <Popup>
+              <div>
+                <h1 className="text-2xl">You are here</h1>
+                <p className="text-muted-foreground">Your current location</p>
+              </div>
+            </Popup>
+          </Marker>
+        )}
         {newsReportedPoints.length > 0 &&
           newsReportedPoints.map((point: any) => (
             <Marker

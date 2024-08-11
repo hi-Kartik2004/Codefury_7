@@ -19,6 +19,28 @@ import { TabsList } from "@radix-ui/react-tabs";
 import { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsTrigger } from "../ui/tabs";
 import { Map } from "../Map";
+import { Separator } from "../ui/separator";
+import { ReloadIcon } from "@radix-ui/react-icons";
+import { toast } from "sonner";
+import { Dialog } from "../ui/dialog";
+import { DialogContent, DialogTrigger } from "@radix-ui/react-dialog";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../ui/card";
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "../ui/alert-dialog";
+import NearByEvents from "./nearby-events";
 
 export default function MapDashboard({ searchParams }: any) {
   const [newsReportedPoints, setNewsReportedPoints] = useState<any>([]);
@@ -29,6 +51,13 @@ export default function MapDashboard({ searchParams }: any) {
   const [foundPeopleReportedPoints, setFoundPeopleReportedPoints] =
     useState<any>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [filterByName, setFilterByName] = useState<boolean>(false);
+  const [findMissingPerson, setFindMissingPerson] = useState<boolean>(false);
+  const [currentLocation, setCurrentLocation] = useState<{
+    lat: number;
+    lng: number;
+  } | null>(null);
 
   useEffect(() => {
     async function fetchData() {
@@ -37,13 +66,10 @@ export default function MapDashboard({ searchParams }: any) {
         data3 = [],
         data4 = [];
 
-      // Determine the category and fetch the corresponding data
       if (selectedCategory === "news-points") {
         data1 = await fetch("api/map-points?category=news-points").then((res) =>
           res.json()
         );
-
-        console.log("data1", data1);
       } else if (selectedCategory === "user-points") {
         data2 = await fetch("api/map-points?category=user-points").then((res) =>
           res.json()
@@ -71,7 +97,6 @@ export default function MapDashboard({ searchParams }: any) {
         );
       }
 
-      // Update state with fetched data
       setNewsReportedPoints(data1);
       setUserReportedPoints(data2);
       setLostPeopleReportedPoints(data3);
@@ -79,7 +104,72 @@ export default function MapDashboard({ searchParams }: any) {
     }
 
     fetchData();
-  }, [selectedCategory]); // Re-run effect when selectedCategory changes
+  }, [selectedCategory]);
+
+  const handleSearch = () => {
+    let filteredNewsPoints = newsReportedPoints;
+    let filteredUserPoints = userReportedPoints;
+    let filteredLostPeoplePoints = lostPeopleReportedPoints;
+    let filteredFoundPeoplePoints = foundPeopleReportedPoints;
+
+    if (filterByName) {
+      filteredNewsPoints = newsReportedPoints.filter((point: any) =>
+        point?.full_name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      filteredUserPoints = userReportedPoints.filter((point: any) =>
+        point?.full_name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      filteredLostPeoplePoints = lostPeopleReportedPoints.filter((point: any) =>
+        point?.full_name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      filteredFoundPeoplePoints = foundPeopleReportedPoints.filter(
+        (point: any) =>
+          point?.full_name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+
+    if (findMissingPerson) {
+      filteredLostPeoplePoints = lostPeopleReportedPoints.filter((point: any) =>
+        point.name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+
+    // Update state with filtered points
+    setNewsReportedPoints(filteredNewsPoints);
+    setUserReportedPoints(filteredUserPoints);
+    setLostPeopleReportedPoints(filteredLostPeoplePoints);
+    setFoundPeopleReportedPoints(filteredFoundPeoplePoints);
+
+    console.log("Search for:", searchQuery);
+  };
+
+  const handleGetCurrentLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setCurrentLocation({ lat: latitude, lng: longitude });
+        },
+        (error) => {
+          console.error("Error getting location:", error);
+        }
+      );
+    } else {
+      console.error("Geolocation is not supported by this browser.");
+    }
+  };
+
+  async function handleGetCoordinates(e: any) {
+    e.preventDefault();
+    const location = e.target[0].value;
+    const resp =
+      await fetch(`http://api.weatherapi.com/v1/forecast.json?key=${process.env.NEXT_PUBLIC_WEATHER_API_KEY}&q=${location}&days=1&aqi=no&alerts=yes
+`);
+    const data = await resp.json();
+    console.log("Weather data", data);
+    setCurrentLocation({ lat: data?.location.lat, lng: data?.location.lon });
+    toast.success("Location updated successfully");
+  }
 
   return (
     <div className="flex min-h-screen w-full">
@@ -89,6 +179,12 @@ export default function MapDashboard({ searchParams }: any) {
           userReportedPoints={userReportedPoints}
           lostPeopleReportedPoints={lostPeopleReportedPoints}
           foundPeopleReportedPoints={foundPeopleReportedPoints}
+          mylocation={currentLocation}
+          center={
+            currentLocation
+              ? [currentLocation.lat, currentLocation.lng]
+              : [38.9637, 35.2433]
+          }
         />
       </div>
       <Tabs defaultValue="current" className="max-w-[300px] w-full rounded-sm">
@@ -120,12 +216,39 @@ export default function MapDashboard({ searchParams }: any) {
         </TabsList>
         <TabsContent value="current">
           <div className="flex flex-col gap-4 bg-background p-6 sm:p-8">
-            <h1>Current</h1>
+            <h1 className="text-semibold underline-offset-8 underline">
+              Current
+            </h1>
             <div className="grid gap-4">
               <div className="grid gap-2">
-                <Label htmlFor="location">Search</Label>
-                <Input id="query" placeholder="Enter a search query" />
+                <Label htmlFor="search">Search by Person</Label>
+                <Input
+                  id="search"
+                  placeholder="Enter the name"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+                <div className="flex gap-2 items-center">
+                  <input
+                    type="checkbox"
+                    id="filterByName"
+                    checked={filterByName}
+                    onChange={() => setFilterByName(!filterByName)}
+                  />
+                  <Label htmlFor="filterByName">Filter by reporter Name</Label>
+                </div>
+                <div className="flex gap-2 items-center">
+                  <input
+                    type="checkbox"
+                    id="findMissingPerson"
+                    checked={findMissingPerson}
+                    onChange={() => setFindMissingPerson(!findMissingPerson)}
+                  />
+                  <Label htmlFor="findMissingPerson">Find Missing Person</Label>
+                </div>
+                <Button onClick={handleSearch}>Search</Button>
               </div>
+              <Separator className="my-4" />
               <div className="grid gap-2">
                 <Label htmlFor="category">Category</Label>
                 <Select onValueChange={(value) => setSelectedCategory(value)}>
@@ -143,6 +266,17 @@ export default function MapDashboard({ searchParams }: any) {
                   </SelectContent>
                 </Select>
               </div>
+              <Separator className="my-4" />
+              <Button onClick={handleGetCurrentLocation}>
+                Mark my Current Location
+              </Button>
+              <Button
+                variant={"outline"}
+                onClick={() => window.location.reload()}
+                className="flex gap-2 items-center"
+              >
+                <ReloadIcon /> Refresh
+              </Button>
             </div>
           </div>
         </TabsContent>
@@ -151,43 +285,25 @@ export default function MapDashboard({ searchParams }: any) {
           <div className="flex flex-col gap-4 bg-background p-6 sm:p-8">
             <h1>Future</h1>
             <div className="grid gap-4">
-              <div className="grid gap-2">
+              <form
+                className="grid gap-2"
+                onSubmit={(e) => handleGetCoordinates(e)}
+              >
                 <Label htmlFor="location">Location</Label>
                 <Input id="location" placeholder="Enter a location" />
+                <Button type="submit">Replace my location</Button>
+              </form>
+              <div>
+                <Button
+                  onClick={handleGetCurrentLocation}
+                  className="w-full"
+                  variant={"secondary"}
+                >
+                  Mark my Current Location
+                </Button>
               </div>
-              <div className="grid gap-2">
-                <Label htmlFor="date-range">Date Range</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      id="date-range"
-                      variant="outline"
-                      className="w-full justify-start text-left font-normal"
-                    >
-                      <CalendarDaysIcon className="mr-1 h-4 w-4 -translate-x-1" />
-                      Pick a date range
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar initialFocus mode="range" numberOfMonths={1} />
-                  </PopoverContent>
-                </Popover>
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="category">Category</Label>
-                <Select>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="restaurants">Restaurants</SelectItem>
-                    <SelectItem value="attractions">Attractions</SelectItem>
-                    <SelectItem value="hotels">Hotels</SelectItem>
-                    <SelectItem value="shopping">Shopping</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <Button className="w-full">Apply Filters</Button>
+              <Separator className="my-4" />
+              <NearByEvents currentLocation={currentLocation} />
             </div>
           </div>
         </TabsContent>

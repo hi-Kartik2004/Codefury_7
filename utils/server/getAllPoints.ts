@@ -1,11 +1,16 @@
 import { createSupabaseServer } from "@/lib/supabase/server";
 
+const THIRTY_DAYS_AGO = new Date();
+THIRTY_DAYS_AGO.setDate(THIRTY_DAYS_AGO.getDate() - 30);
+
 export async function getUserReportedPoints() {
   "use server";
   const supabase = createSupabaseServer();
   const { data, error } = await supabase
     .from("userIncidentLocations")
-    .select("*");
+    .select("*")
+    .gt("created_at", THIRTY_DAYS_AGO.toISOString()); // Ensure your date column is named 'reported_at'
+
   if (error) {
     console.error(error);
     return [];
@@ -18,7 +23,9 @@ export async function getNewsReportedPoints() {
   const supabase = createSupabaseServer();
   const { data, error } = await supabase
     .from("newsIncidentLocations")
-    .select("*");
+    .select("*")
+    .gt("created_at", THIRTY_DAYS_AGO.toISOString()); // Ensure your date column is named 'reported_at'
+
   if (error) {
     console.error(error);
     return [];
