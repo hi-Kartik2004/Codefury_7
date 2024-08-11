@@ -60,7 +60,7 @@ export async function GET(request: Request) {
 
         try {
           const resp = await fetch(
-            "http://localhost:3000/api/get-info-for-newsletters",
+            `${process.env.NEXT_PUBLIC_DOMAIN}/api/get-info-for-newsletters`,
             options
           );
 
@@ -77,7 +77,10 @@ export async function GET(request: Request) {
             body: JSON.stringify({ email: ele.email, data: await resp.json() }),
           };
 
-          await fetch("http://localhost:3000/api/send-email", options2);
+          await fetch(
+            `${process.env.NEXT_PUBLIC_DOMANIN}/api/send-email`,
+            options2
+          );
 
           // Update the record in the database
           const { error: updateError } = await supabase

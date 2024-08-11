@@ -140,7 +140,7 @@ export default function MapDashboard({ searchParams }: any) {
     e.preventDefault();
     const location = e.target[0].value;
     const resp =
-      await fetch(`http://api.weatherapi.com/v1/forecast.json?key=${process.env.NEXT_PUBLIC_WEATHER_API_KEY}&q=${location}&days=1&aqi=no&alerts=yes
+      await fetch(`https://api.weatherapi.com/v1/forecast.json?key=${process.env.NEXT_PUBLIC_WEATHER_API_KEY}&q=${location}&days=1&aqi=no&alerts=yes
 `);
     const data = await resp.json();
     console.log("Weather data", data);
