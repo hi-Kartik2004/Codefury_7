@@ -24,7 +24,7 @@ export async function POST(request: Request) {
     from: "Kartikeya Saini <weekly_newsletter@example.com>", // Sender address
     to: resp.email, // List of recipients
     subject: "Aid-Grid - Weekly Newsletter", // Subject line
-    html: "Link here", // HTML body
+    html: `<a href="${process.env.NEXT_PUBLIC_DOMAIN}/news-letter">Link  Here</a>`, // HTML body
   };
 
   // Send the email

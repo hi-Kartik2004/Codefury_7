@@ -58,11 +58,14 @@ export async function GET(request: Request) {
           body: JSON.stringify(currentLocation),
         };
 
+        let resp: any;
+        let toBeStoredData: any;
         try {
-          const resp = await fetch(
+          resp = await fetch(
             `${process.env.NEXT_PUBLIC_DOMAIN}/api/get-info-for-newsletters`,
             options
           );
+          toBeStoredData = await resp.json();
 
           if (!resp.ok) {
             throw new Error(`Failed to send newsletter to ${ele.email}`);
@@ -74,7 +77,7 @@ export async function GET(request: Request) {
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({ email: ele.email, data: await resp.json() }),
+            body: JSON.stringify({ email: ele.email, data: toBeStoredData }),
           };
 
           try {
@@ -89,7 +92,10 @@ export async function GET(request: Request) {
           // Update the record in the database
           const { error: updateError } = await supabase
             .from("weekly_newsletters")
-            .update({ updated_at: new Date().toISOString() })
+            .update({
+              updated_at: new Date().toISOString(),
+              resp: toBeStoredData.data,
+            })
             .eq("email", ele.email);
 
           if (error) {
