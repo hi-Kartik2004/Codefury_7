@@ -1,11 +1,11 @@
 "use client";
 import React from "react";
-import GoogleTranslator from "react-multilingual-content";
+import GoogleTranslator from "./GoogleTranslator";
 
 function Translator() {
   return (
     <div>
-      <GoogleTranslator className="max-w-[150px] w-full" />
+      <GoogleTranslator className="w-full max-w-[100px] flex flex-col gap-0" />
     </div>
   );
 }

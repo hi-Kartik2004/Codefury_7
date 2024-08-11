@@ -30,7 +30,6 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import Image from "next/image";
 import { ModeToggle } from "../ModeToggle";
 import { createSupabaseServer } from "@/lib/supabase/server";
-import GoogleTranslator from "react-multilingual-content";
 import Translator from "../Translator";
 
 export async function NavbarV0() {
@@ -78,6 +77,8 @@ export async function NavbarV0() {
           >
             Find People
           </Link>
+
+          <Translator />
         </nav>
         <div className="flex items-center gap-2">
           {!loggedIn && (
@@ -117,9 +118,6 @@ export async function NavbarV0() {
                   </Link>
                 </DropdownMenuItem>
 
-                <DropdownMenuItem>
-                  <Translator />
-                </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem className="p-0">
                   <Button variant={"destructive"} className="w-full" asChild>
