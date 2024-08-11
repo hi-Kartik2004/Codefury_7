@@ -77,10 +77,14 @@ export async function GET(request: Request) {
             body: JSON.stringify({ email: ele.email, data: await resp.json() }),
           };
 
-          await fetch(
-            `${process.env.NEXT_PUBLIC_DOMANIN}/api/send-email`,
-            options2
-          );
+          try {
+            await fetch(
+              `${process.env.NEXT_PUBLIC_DOMAIN}/api/send-email`,
+              options2
+            );
+          } catch (err) {
+            console.error(err);
+          }
 
           // Update the record in the database
           const { error: updateError } = await supabase

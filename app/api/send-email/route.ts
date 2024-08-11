@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import nodemailer, { SentMessageInfo } from "nodemailer";
-import ReactDOMServer from "react-dom/server";
 
 import { createSupabaseServer } from "@/lib/supabase/server";
 
