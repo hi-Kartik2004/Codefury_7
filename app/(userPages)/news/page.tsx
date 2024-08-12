@@ -91,7 +91,7 @@ const News: React.FC = () => {
   const [data, setData] = useState<NewsData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [pageSize, setPageSize] = useState<number>(10);
+  const [pageSize, setPageSize] = useState<number>(100);
   const [totalResults, setTotalResults] = useState<number>(0);
   const supabase = createSupabaseBrowser();
 
