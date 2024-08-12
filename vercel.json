@@ -1,8 +1,8 @@
 {
   "crons": [
     {
-      "path": "/api/populate-news-data-on-map",
-      "schedule": "0 10 * * 1"
+      "path": "/api/cron",
+      "schedule": "* * * * *"
     }
   ]
 }
