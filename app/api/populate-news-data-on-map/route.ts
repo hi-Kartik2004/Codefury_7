@@ -21,7 +21,7 @@ interface NewsData {
   };
 }
 
-async function GET(req: Request) {
+export async function GET(req: Request) {
   const supabase = supabaseAdmin();
   const apiKey = process.env.NEXT_PUBLIC_NEWS_API_KEY;
 
