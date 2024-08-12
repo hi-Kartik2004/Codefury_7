@@ -219,7 +219,7 @@ const News: React.FC = () => {
   const totalPages = Math.ceil(totalResults / pageSize);
 
   return (
-    <div className="pt-24 container">
+    <div className="pt-10 container">
       <div>
         <h1 className="text-5xl font-semibold bg-gradient-to-r max-w-[650px] from-yellow-500 to-orange-500 text-transparent bg-clip-text">
           Customizable News Search

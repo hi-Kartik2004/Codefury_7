@@ -149,7 +149,9 @@ export function Map({
 
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
-                      <Button variant="outline">View Details</Button>
+                      <Button variant="outline" className="text-white">
+                        View Details
+                      </Button>
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                       <div>

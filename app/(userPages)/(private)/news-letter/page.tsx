@@ -23,7 +23,7 @@ async function NewsLetterView() {
   }
 
   return (
-    <div className="pt-24">
+    <div className="pt-10">
       <NewsletterComponent locations={dataJson?.resp} />
     </div>
   );

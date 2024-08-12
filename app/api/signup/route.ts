@@ -1,7 +1,6 @@
-import nodemailer, { SentMessageInfo } from "nodemailer";
-import { NextRequest, NextResponse } from "next/server";
 import supabaseAdmin from "@/lib/supabase/admin";
-import SupaAuthVerifyEmail from "@/emails"; // Assuming this is a React component or similar
+import { NextRequest, NextResponse } from "next/server";
+import nodemailer, { SentMessageInfo } from "nodemailer";
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   // Rate limit logic here if needed
@@ -19,13 +18,12 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   console.log(res.data);
 
   if (res.data.properties?.email_otp) {
-    // Set up Nodemailer
     const transporter = nodemailer.createTransport({
       host: "smtp.gmail.com",
       port: 465,
       secure: true, // true for 465, false for other ports
       auth: {
-        user: "hi.kartikeyasaini@gmail.com", // Gmail address
+        user: "<name>@gmail.com", // Gmail address
         pass: process.env.SMTP_PASSWORD as string, // App-specific password or your SMTP password
       },
     });
@@ -35,7 +33,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       from: "Kartikeya Saini <onboarding@example.com>", // Sender address
       to: data.email, // List of recipients
       subject: "Verify Email", // Subject line
-      html: res.data.properties?.email_otp, // Plain text body
+      html: res.data.properties?.email_otp,
     };
 
     // Send the email

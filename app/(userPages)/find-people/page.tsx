@@ -226,7 +226,7 @@ function FindPeople() {
   };
 
   return (
-    <div className="pt-28 container">
+    <div className="pt-10 container">
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-4xl font-semibold">Find People</h2>

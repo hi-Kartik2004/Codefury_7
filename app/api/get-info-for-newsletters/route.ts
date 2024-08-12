@@ -4,7 +4,6 @@ export async function POST(request: Request) {
   const supabase = createSupabaseServer();
   const data = await request.json();
   const currentLocation = { lat: data?.lat, lng: data?.lng };
-  console.log(currentLocation);
 
   const R = 6371; // Radius of the Earth in kilometers
 

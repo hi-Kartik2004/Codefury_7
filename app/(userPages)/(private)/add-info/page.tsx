@@ -32,7 +32,7 @@ function AddInfo() {
     }
   }
   return (
-    <div className="pt-24 container">
+    <div className="pt-10 container">
       <div>
         <AddInfoFormV0 addUserIncident={addUserIncident} />
       </div>
