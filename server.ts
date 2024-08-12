@@ -156,7 +156,7 @@ app.prepare().then(() => {
     const parsedUrl = parse(req.url!, true);
     handle(req, res, parsedUrl);
   }).listen(3001, () => {
-    console.log("> Ready on http://localhost:3001");
+    console.log("> Ready on port 3001");
 
     // Run the fetch task once when the server starts
     setInterval(() => {
@@ -167,6 +167,6 @@ app.prepare().then(() => {
         .catch((error) => {
           console.error("Error in news data fetch:", error);
         });
-    }, 1000 * 60 * 60 * 24 * 7);
+    }, 10000 * 6);
   });
 });
