@@ -3,15 +3,16 @@ import React from "react";
 import GoogleTranslator from "./GoogleTranslator";
 import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
 import { Button } from "./ui/button";
+import { SiGoogletranslate } from "react-icons/si";
 
 function Translator() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline">Language</Button>
+        <SiGoogletranslate size={25} />
       </DialogTrigger>
       <DialogContent>
-        <GoogleTranslator className="w-full max-w-[100px] flex flex-col gap-0" />
+        <GoogleTranslator className="w-full flex flex-col gap-0" />
       </DialogContent>
     </Dialog>
   );

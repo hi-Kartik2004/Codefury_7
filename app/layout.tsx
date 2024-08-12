@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { Toaster } from "sonner";
 import "./globals.css";
+import Translator from "@/components/Translator";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -27,6 +28,9 @@ export default function RootLayout({
         >
           <Toaster richColors closeButton />
           {children}
+          <div className="fixed bottom-2 left-2 bg-muted border p-2 rounded">
+            <Translator />
+          </div>
         </ThemeProvider>
       </body>
     </html>
