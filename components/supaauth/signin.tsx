@@ -49,7 +49,7 @@ export default function SignIn() {
             height={50}
             className=" rounded-full mx-auto"
           />
-          <h1 className="font-bold">Sign in to SupaAuth</h1>
+          <h1 className="font-bold">Sign in to Aid-Grid</h1>
           <p className="text-sm">Welcome back! Please sign in to continue</p>
         </div>
         <Social redirectTo={next || "/"} />
