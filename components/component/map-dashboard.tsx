@@ -308,7 +308,7 @@ export default function MapDashboard({ searchParams }: any) {
         </div>
       )}
 
-      <div className="block md:hidden fixed bottom-4 right-4 bg-black rounded-md p-2 border border-gray-300">
+      <div className="block md:hidden fixed bottom-4 right-4 bg-muted rounded-md p-2 border border-gray-300">
         <span onClick={() => setShowSidebar(!showSidebar)}>
           {showSidebar ? (
             <div className="flex gap-2 items-center text-sm">
