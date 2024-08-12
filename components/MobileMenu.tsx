@@ -2,6 +2,7 @@
 import Link from "next/link";
 import {
   Sheet,
+  SheetClose,
   SheetContent,
   SheetDescription,
   SheetHeader,
@@ -12,6 +13,7 @@ import { Button } from "./ui/button";
 import { HamburgerMenuIcon } from "@radix-ui/react-icons";
 import Translator from "./Translator";
 import GoogleTranslator from "./GoogleTranslator";
+import { Separator } from "./ui/separator";
 
 function MobileMenu() {
   return (
@@ -25,36 +27,36 @@ function MobileMenu() {
           <SheetTitle className="text-center">Menu</SheetTitle>
         </SheetHeader>
 
+        <Separator className="my-4" />
+
         <Link
           href="/news"
           className="text-sm font-medium transition-all hover:text-primary underline underline-offset-4 hover:underline-offset-8 duration-200"
           prefetch={false}
         >
-          News
+          <SheetClose>News</SheetClose>
         </Link>
         <Link
           href="add-info"
           className="text-sm font-medium transition-all hover:text-primary underline underline-offset-4 hover:underline-offset-8 duration-200"
           prefetch={false}
         >
-          Report Emergency
+          <SheetClose>Report Emergency</SheetClose>
         </Link>
         <Link
           href="get-emergency-contacts"
           className="text-sm font-medium transition-all hover:text-primary underline underline-offset-4 hover:underline-offset-8 duration-200"
           prefetch={false}
         >
-          Get Emergency Contacts
+          <SheetClose>Get Emergency Contacts</SheetClose>
         </Link>
         <Link
           href="find-people"
           className="text-sm font-medium hover:text-primary underline underline-offset-4 hover:underline-offset-8 duration-200 transition-all"
           prefetch={false}
         >
-          Find People
+          <SheetClose>Find People</SheetClose>
         </Link>
-
-        <GoogleTranslator className="w-full max-w-[120px] flex flex-col gap-0" />
       </SheetContent>
     </Sheet>
   );
