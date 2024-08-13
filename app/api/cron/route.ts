@@ -39,7 +39,8 @@ export async function GET(req: Request) {
   }
 
   const baseUrl = "https://newsapi.ai/api/v1/article/getArticles";
-
+  const fullUrl =
+    "https://newsapi.ai/api/v1/article/getArticles?query=%7B%22%24query%22%3A%7B%22%24and%22%3A%5B%7B%22%24or%22%3A%5B%7B%22categoryUri%22%3A%22dmoz%2FScience%2FEarth_Sciences%2FNatural_Disasters_and_Hazards%22%7D%2C%7B%22categoryUri%22%3A%22dmoz%2FSociety%2FPhilanthropy%2FDisaster_Relief_and_Recovery%22%7D%5D%7D%2C%7B%22dateStart%22%3A%222024-08-13%22%2C%22dateEnd%22%3A%222024-08-13%22%7D%5D%7D%7D&&resultType=articles&articlesSortBy=date&includeLocationGeoLocation=true&includeLocationPopulation=true&includeLocationGeoNamesId=true&includeArticleLocation=true&apiKey=298f49f0-5f81-494d-9314-7b4796b4ef30&callback=JSON_CALLBACK";
   try {
     let pagesProcessed = 0;
     let totalInserted = 0;
@@ -76,11 +77,13 @@ export async function GET(req: Request) {
         articlesCount: ARTICLES_PER_PAGE,
       };
 
-      const response = await fetch(baseUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(requestBody),
-      });
+      // const response = await fetch(baseUrl, {
+      //   method: "POST",
+      //   headers: { "Content-Type": "application/json" },
+      //   body: JSON.stringify(requestBody),
+      // });
+
+      const response = await fetch(fullUrl);
 
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
