@@ -64,8 +64,6 @@ export async function GET(req: Request) {
         resultType: "articles",
         articlesSortBy: "date",
         apiKey: apiKey,
-        dateStart: formattedDate,
-        dateEnd: formattedDate,
         includeArticleLocation: true,
         includeLocationGeoLocation: true,
         includeLocationPopulation: true,
