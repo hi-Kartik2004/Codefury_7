@@ -21,7 +21,7 @@ interface NewsData {
   };
 }
 
-const MAX_PAGES_PER_RUN = 17; // Adjust this based on your needs and Vercel's limits
+const MAX_PAGES_PER_RUN = 3; // Adjust this based on your needs and Vercel's limits
 const ARTICLES_PER_PAGE = 100;
 export const dynamic = "force-dynamic"; // Force dynamic (server) route instead of static page
 
@@ -42,6 +42,8 @@ export async function GET(req: Request) {
   try {
     let pagesProcessed = 0;
     let totalInserted = 0;
+    const currentDate = new Date();
+    const formattedDate = currentDate.toISOString().split("T")[0];
 
     while (pagesProcessed < MAX_PAGES_PER_RUN) {
       const requestBody = {
@@ -65,6 +67,8 @@ export async function GET(req: Request) {
         resultType: "articles",
         articlesSortBy: "date",
         apiKey: apiKey,
+        dateStart: formattedDate,
+        dateEnd: formattedDate,
         includeArticleLocation: true,
         includeLocationGeoLocation: true,
         includeLocationPopulation: true,
