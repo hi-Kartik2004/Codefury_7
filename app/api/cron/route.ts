@@ -23,6 +23,7 @@ interface NewsData {
 
 const MAX_PAGES_PER_RUN = 17; // Adjust this based on your needs and Vercel's limits
 const ARTICLES_PER_PAGE = 100;
+export const dynamic = "force-dynamic"; // Force dynamic (server) route instead of static page
 
 export async function GET(req: Request) {
   const supabase = supabaseAdmin();
