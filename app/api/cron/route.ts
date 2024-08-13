@@ -60,9 +60,6 @@ export async function GET(req: Request) {
               },
             ],
           },
-          $filter: {
-            forceMaxDataTimeWindow: "7",
-          },
         },
         resultType: "articles",
         articlesSortBy: "date",
