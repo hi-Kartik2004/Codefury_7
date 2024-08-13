@@ -21,7 +21,7 @@ interface NewsData {
   };
 }
 
-const MAX_PAGES_PER_RUN = 15; // Adjust this based on your needs and Vercel's limits
+const MAX_PAGES_PER_RUN = 17; // Adjust this based on your needs and Vercel's limits
 const ARTICLES_PER_PAGE = 100;
 
 export async function GET(req: Request) {
@@ -39,7 +39,6 @@ export async function GET(req: Request) {
   const baseUrl = "https://newsapi.ai/api/v1/article/getArticles";
 
   try {
-    let cursor = await getCursor(supabase);
     let pagesProcessed = 0;
     let totalInserted = 0;
 
@@ -59,8 +58,7 @@ export async function GET(req: Request) {
             ],
           },
           $filter: {
-            forceMaxDataTimeWindow: "31",
-            dateStart: cursor, // Use cursor for pagination
+            forceMaxDataTimeWindow: "7",
           },
         },
         resultType: "articles",
@@ -70,6 +68,7 @@ export async function GET(req: Request) {
         includeLocationGeoLocation: true,
         includeLocationPopulation: true,
         includeLocationGeoNamesId: true,
+        articlesPage: pagesProcessed + 1,
         articlesCount: ARTICLES_PER_PAGE,
       };
 
@@ -99,11 +98,6 @@ export async function GET(req: Request) {
         supabase
       );
       totalInserted += insertedCount;
-
-      // Update cursor to the date of the last article
-      cursor =
-        result.articles.results[result.articles.results.length - 1].dateTime;
-      await updateCursor(supabase, cursor);
 
       pagesProcessed++;
     }
@@ -183,28 +177,4 @@ async function processArticles(
   }
 
   return insertedCount;
-}
-
-async function getCursor(supabase: any): Promise<string> {
-  const { data, error } = await supabase
-    .from("newsApiCursor")
-    .select("cursor")
-    .single();
-
-  if (error || !data) {
-    console.error("Error fetching cursor:", error?.message);
-    return new Date().toISOString(); // Default to current date if no cursor found
-  }
-
-  return data.cursor;
-}
-
-async function updateCursor(supabase: any, cursor: string) {
-  const { error } = await supabase
-    .from("newsApiCursor")
-    .upsert({ id: 1, cursor: cursor });
-
-  if (error) {
-    console.error("Error updating cursor:", error.message);
-  }
 }
