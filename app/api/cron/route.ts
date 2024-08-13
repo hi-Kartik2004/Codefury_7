@@ -1,4 +1,5 @@
 import supabaseAdmin from "@/lib/supabase/admin";
+import { date } from "zod";
 
 interface Article {
   title: string;
@@ -44,6 +45,7 @@ export async function GET(req: Request) {
     let totalInserted = 0;
     const currentDate = new Date();
     const formattedDate = currentDate.toISOString().split("T")[0];
+    console.log(formattedDate);
 
     while (pagesProcessed < MAX_PAGES_PER_RUN) {
       const requestBody = {
@@ -62,6 +64,8 @@ export async function GET(req: Request) {
           },
         },
         resultType: "articles",
+        dateStart: formattedDate,
+        dateEnd: formattedDate,
         articlesSortBy: "date",
         apiKey: apiKey,
         includeArticleLocation: true,
