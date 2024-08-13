@@ -82,14 +82,14 @@ export async function GET(req: Request) {
 
       const result = await response.json();
 
-      console.log(result.articles);
+      // console.log(result.articles);
 
       if (result.articles.results && result.articles.results.length > 0) {
-        console.log(`Fetched ${result.articles.length} articles`);
+        // console.log(`Fetched ${result.articles.length} articles`);
         let count = 0,
           total = 0;
         for (const article of result.articles.results) {
-          console.log(article.location);
+          // console.log(article.location);
           total++;
 
           if (article.location) {
@@ -134,7 +134,7 @@ export async function GET(req: Request) {
                     },
                   ]);
 
-                console.log("Inserted new data");
+                // console.log("Inserted new data");
 
                 if (insertError) {
                   console.error(
