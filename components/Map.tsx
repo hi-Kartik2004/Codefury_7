@@ -1,21 +1,17 @@
 "use client";
-import React from "react";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { AlertDialog } from "@radix-ui/react-alert-dialog";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import MarkerClusterGroup from "react-leaflet-cluster";
-import dynamic from "next/dynamic";
 import Link from "next/link";
-import { Dialog, DialogTrigger } from "./ui/dialog";
-import { DialogContent } from "@radix-ui/react-dialog";
-import { Button } from "./ui/button";
-import { AlertDialog } from "@radix-ui/react-alert-dialog";
+import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
+import MarkerClusterGroup from "react-leaflet-cluster";
 import {
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogTrigger,
 } from "./ui/alert-dialog";
 import { Badge } from "./ui/badge";
+import { Button } from "./ui/button";
 
 // Define the center coordinates type
 type LatLngExpression = L.LatLngExpression;
@@ -114,13 +110,22 @@ export function Map({
                   <h1 className="text-2xl">
                     {point.population} people impacted
                   </h1>
-                  <Link
-                    href={point?.read_url}
-                    target="_blank"
-                    className="underline underline-offset-8"
-                  >
-                    Read more
-                  </Link>
+                  <div className="flex justify-around items-center mt-2">
+                    <Link
+                      href={point?.read_url}
+                      target="_blank"
+                      className="underline underline-offset-8"
+                    >
+                      Read more
+                    </Link>
+                    <Link
+                      href={`https://www.google.com/maps/dir/${point.lat},${point.long}`}
+                      className="underline underline-offset-8"
+                      target="_blank"
+                    >
+                      Route
+                    </Link>
+                  </div>
                   <p className="text-muted-foreground">{point?.created_at}</p>
                 </div>
               </Popup>
