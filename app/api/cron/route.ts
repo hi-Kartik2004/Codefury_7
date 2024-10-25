@@ -37,42 +37,49 @@ export async function GET(req: Request) {
       { status: 500 }
     );
   }
+  const currentDate = new Date();
+  const formattedDate = currentDate.toISOString().split("T")[0];
 
   const baseUrl = "https://newsapi.ai/api/v1/article/getArticles";
-  const fullUrl =
-    "https://newsapi.ai/api/v1/article/getArticles?query=%7B%22%24query%22%3A%7B%22%24and%22%3A%5B%7B%22%24or%22%3A%5B%7B%22categoryUri%22%3A%22dmoz%2FScience%2FEarth_Sciences%2FNatural_Disasters_and_Hazards%22%7D%2C%7B%22categoryUri%22%3A%22dmoz%2FSociety%2FPhilanthropy%2FDisaster_Relief_and_Recovery%22%7D%5D%7D%2C%7B%22dateStart%22%3A%222024-08-13%22%2C%22dateEnd%22%3A%222024-08-13%22%7D%5D%7D%7D&&resultType=articles&articlesSortBy=date&includeLocationGeoLocation=true&includeLocationPopulation=true&includeLocationGeoNamesId=true&includeArticleLocation=true&apiKey=298f49f0-5f81-494d-9314-7b4796b4ef30";
+  const fullUrl = `https://newsapi.ai/api/v1/article/getArticles?query=%7B%22%24query%22%3A%7B%22%24and%22%3A%5B%7B%22%24or%22%3A%5B%7B%22categoryUri%22%3A%22dmoz%2FScience%2FEarth_Sciences%2FNatural_Disasters_and_Hazards%22%7D%2C%7B%22categoryUri%22%3A%22dmoz%2FSociety%2FPhilanthropy%2FDisaster_Relief_and_Recovery%22%7D%5D%7D%2C%7B%22dateStart%22%3A%22${formattedDate}%22%2C%22dateEnd%22%3A%22${formattedDate}%22%7D%5D%7D%7D&&resultType=articles&articlesSortBy=date&includeLocationGeoLocation=true&includeLocationPopulation=true&apiKey=${apiKey}`;
 
-  const newFullUrl =
-    "https://www.newsapi.ai/api/v1/article/getArticles?query=%7B%22%24query%22%3A%7B%22%24and%22%3A%5B%7B%22%24or%22%3A%5B%7B%22categoryUri%22%3A%22dmoz%2FScience%2FEarth_Sciences%2FNatural_Disasters_and_Hazards%22%7D%2C%7B%22categoryUri%22%3A%22dmoz%2FSociety%2FPhilanthropy%2FDisaster_Relief_and_Recovery%22%7D%5D%7D%2C%7B%22dateStart%22%3A%222024-10-25%22%2C%22dateEnd%22%3A%222024-10-25%22%7D%5D%7D%7D&resultType=articles&articlesSortBy=date&apiKey=26887b36-821f-41cb-8344-dddd52235855";
   try {
     let pagesProcessed = 0;
     let totalInserted = 0;
-    const currentDate = new Date();
-    const formattedDate = currentDate.toISOString().split("T")[0];
     console.log(formattedDate);
 
     while (pagesProcessed < MAX_PAGES_PER_RUN) {
-      const requestBody = {
+      var requestBody = {
         query: {
           $query: {
-            $or: [
+            $and: [
               {
-                categoryUri:
-                  "dmoz/Science/Earth_Sciences/Natural_Disasters_and_Hazards",
+                $or: [
+                  {
+                    categoryUri:
+                      "dmoz/Science/Earth_Sciences/Natural_Disasters_and_Hazards",
+                  },
+                  {
+                    categoryUri:
+                      "dmoz/Society/Philanthropy/Disaster_Relief_and_Recovery",
+                  },
+                ],
               },
               {
-                categoryUri:
-                  "dmoz/Society/Philanthropy/Disaster_Relief_and_Recovery",
+                dateStart: formattedDate,
+                dateEnd: formattedDate,
               },
             ],
           },
+          $filter: {
+            forceMaxDataTimeWindow: "31",
+          },
         },
         resultType: "articles",
-        dateStart: formattedDate,
-        dateEnd: formattedDate,
         articlesSortBy: "date",
-        apiKey: apiKey,
         includeArticleLocation: true,
+
+        apiKey: apiKey,
         includeLocationGeoLocation: true,
         includeLocationPopulation: true,
         includeLocationGeoNamesId: true,
@@ -80,19 +87,20 @@ export async function GET(req: Request) {
         articlesCount: ARTICLES_PER_PAGE,
       };
 
-      // const response = await fetch(baseUrl, {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify(requestBody),
-      // });
+      const response = await fetch(baseUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(requestBody),
+      });
 
-      const response = await fetch(newFullUrl);
+      // const response = await fetch(fullUrl);
 
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
 
       const result = await response.json();
+      // console.log(JSON.stringify(result));
 
       if (
         !result.articles ||
