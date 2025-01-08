@@ -140,7 +140,7 @@ export function EmergencyContactForm() {
           .from("emergencyContactsLink")
           .insert({
             user_id: user?.id,
-            email: contacts[0]?.email, // Assuming the first contact's email is used
+            email:  user?.user_metadata?.email, // Assuming the first contact's email is used
             password: password,
           });
 
